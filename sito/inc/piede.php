@@ -3,7 +3,6 @@
 $c = contenuti();
 $k = $c['contacts'] ?? [];
 $tel = preg_replace('/[^0-9+]/', '', $k['phone'] ?? '');
-$wa = preg_replace('/[^0-9]/', '', $k['whatsapp'] ?? '');
 ?>
   </main>
 
@@ -11,13 +10,12 @@ $wa = preg_replace('/[^0-9]/', '', $k['whatsapp'] ?? '');
     <div class="piede-dentro">
       <div class="piede-testa">
         <img class="piede-logo" src="assets/img/logo.png" alt="<?= e($c['studioName'] ?? 'Studio 54') ?>">
-        <a class="bottone" href="<?= e(url('preventivo')) ?>">Richiedi un preventivo</a>
       </div>
+      <!-- Preventivo e WhatsApp stanno solo nella pagina del preventivo. -->
       <div class="piede-colonne">
         <div class="piede-scheda">
           <h3>Contatti</h3>
           <?php if (!empty($k['phone'])): ?><a href="tel:<?= e($tel) ?>"><?= e($k['phone']) ?></a><?php endif; ?>
-          <?php if ($wa !== ''): ?><a href="https://wa.me/<?= e($wa) ?>" target="_blank" rel="noopener">WhatsApp <?= e($k['whatsapp']) ?></a><?php endif; ?>
           <?php if (!empty($k['email'])): ?><a href="mailto:<?= e($k['email']) ?>"><?= e($k['email']) ?></a><?php endif; ?>
         </div>
         <div class="piede-scheda">

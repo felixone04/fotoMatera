@@ -10,6 +10,8 @@ foreach ($servizi as $s) {
     $categorie[$s['category'] ?? 'Servizi'][] = $s;
 }
 $tipi = array_values(array_unique($c['eventTypes'] ?? []));
+$k = $c['contacts'] ?? [];
+$wa = preg_replace('/[^0-9]/', '', $k['whatsapp'] ?? '');
 $foto_testa = trim($c['bannerImage'] ?? '') ?: (foto_apertura()[0]['url'] ?? '');
 
 // Pacchetti visibili, per preselezionare i servizi da un link (?p=...).
@@ -58,6 +60,14 @@ require __DIR__ . '/inc/testa.php';
       <p class="etichetta entra">Preventivo gratuito</p>
       <h1 class="titolo-grande entra">Raccontaci<br><em>il tuo evento.</em></h1>
       <p class="sottotitolo entra">Bastano due minuti: compila i campi e ti richiamiamo noi con una proposta su misura. Gratuito e senza impegno.</p>
+      <?php if ($wa !== ''): ?>
+        <p class="preventivo-wa entra">
+          Preferisci scriverci?
+          <a class="bottone chiaro piccolo" href="https://wa.me/<?= e($wa) ?>" target="_blank" rel="noopener">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8 18.7z"/></svg>WhatsApp
+          </a>
+        </p>
+      <?php endif; ?>
     </div>
     <?php if ($foto_testa !== ''): ?>
       <div class="preventivo-foto rivela"><img <?= foto_attr($foto_testa, '40vw') ?> alt=""></div>
