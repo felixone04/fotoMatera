@@ -184,7 +184,7 @@
           barre.appendChild(b);
         }
       }
-      $$('.storie-prec, .storie-succ', box).forEach(function (b) { b.hidden = n < 2; });
+      $$('.storie-prec, .storie-succ, .storie-frecce', box).forEach(function (b) { b.hidden = n < 2; });
       var s = storie[i];
       scheda.href = s.getAttribute('data-link');
       box.classList.add('cambio');
@@ -232,8 +232,8 @@
       if (img.complete) controlla();
     });
 
-    $('.storie-prec', box).addEventListener('click', function () { vai(i - 1); });
-    $('.storie-succ', box).addEventListener('click', function () { vai(i + 1); });
+    $$('.storie-prec, .storie-indietro', box).forEach(function (b) { b.addEventListener('click', function () { vai(i - 1); }); });
+    $$('.storie-succ, .storie-avanti', box).forEach(function (b) { b.addEventListener('click', function () { vai(i + 1); }); });
     sfoglia(box, function (d) { vai(i + d); });
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) clearTimeout(timer); else vai(i);

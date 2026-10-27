@@ -5,7 +5,6 @@ $pagina = 'index';
 $titolo = '';
 $classe_body = 'pagina-home';
 $c = contenuti();
-$firma = mb_strtolower(str_replace(' ', '', $c['studioName'] ?? 'studio54'));
 
 // Il titolo va a capo dopo la virgola: la seconda parte in corsivo.
 $frase = trim(str_replace("\n", ' ', $c['heroTitle'] ?? ''));
@@ -43,18 +42,24 @@ require __DIR__ . '/inc/testa.php';
       </figure>
     <?php endforeach; ?>
   </div>
+  <div class="storie-velo" aria-hidden="true"></div>
   <div class="storie-barre" aria-hidden="true"></div>
-  <span class="storie-firma" aria-hidden="true"><span><img src="assets/img/mark.png" alt=""></span><?= e($firma) ?></span>
   <button class="storie-prec" type="button" aria-label="Lavoro precedente"></button>
   <button class="storie-succ" type="button" aria-label="Lavoro successivo"></button>
   <?php $primo = $storie[0]['lavoro']; ?>
+  <!-- In basso, direttamente sulla foto: i festeggiati, il tipo di festa e
+       il luogo, con "Guarda" per aprire il lavoro; a destra le frecce. -->
   <a class="storie-scheda" href="<?= e(url('lavoro', $primo['id'])) ?>">
     <span class="storie-testo">
       <b class="storie-titolo"><?= e($primo['title'] ?? '') ?></b>
       <span class="storie-meta"><?= e(unisci([$primo['category'] ?? '', $primo['location'] ?? ''])) ?></span>
     </span>
-    <span class="storie-guarda">Guarda</span>
+    <span class="storie-guarda">Guarda <i aria-hidden="true">&rarr;</i></span>
   </a>
+  <div class="storie-frecce">
+    <button class="storie-freccia storie-indietro" type="button" aria-label="Foto precedente">&#8249;</button>
+    <button class="storie-freccia storie-avanti" type="button" aria-label="Foto successiva">&#8250;</button>
+  </div>
 </section>
 <?php endif; ?>
 
