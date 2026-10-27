@@ -163,19 +163,34 @@
     var storie = $$('.storia', box);
     var barre = $('.storie-barre', box);
     var scheda = $('.storie-scheda', box);
-    var i = 0, timer = null, tTesto = null;
+    var i = 0, timer = null, tTesto = null, tUscita = null;
     barre.style.setProperty('--durata', intervallo + 'ms');
 
     function disegna() {
       var n = storie.length;
       box.hidden = n === 0;
       if (!n) return;
+      // Dissolvenza incrociata: la foto che esce resta sotto, piena, finché
+      // la nuova non è comparsa del tutto.
       storie.forEach(function (s, k) {
         var era = s.classList.contains('attiva');
-        s.classList.toggle('attiva', k === i);
-        // Riavvia la leggera "avvicinata" della foto che entra.
-        if (k === i && !era) { var img = $('img', s); img.style.animation = 'none'; void img.offsetWidth; img.style.animation = ''; }
+        if (k === i) {
+          s.classList.remove('uscente');
+          if (!era) {
+            // Riavvia la leggera "avvicinata" della foto che entra.
+            var img = $('img', s); img.style.animation = 'none'; void img.offsetWidth; img.style.animation = '';
+            s.classList.add('attiva');
+          }
+        } else {
+          s.classList.toggle('uscente', era);
+          s.classList.remove('attiva');
+          if (!era) s.classList.remove('uscente');
+        }
       });
+      clearTimeout(tUscita);
+      tUscita = setTimeout(function () {
+        storie.forEach(function (s) { s.classList.remove('uscente'); });
+      }, 1500);
       barre.innerHTML = '';
       if (n > 1) {
         for (var k = 0; k < n; k++) {

@@ -217,10 +217,14 @@ main { padding-top: var(--barra); }
   background: linear-gradient(to bottom, rgba(30, 42, 64, .28), rgba(30, 42, 64, 0));
 }
 .storie-foto, .storia { position: absolute; inset: 0; margin: 0; }
-.storia { opacity: 0; transition: opacity .7s ease; }
-.storia.attiva { opacity: 1; z-index: 1; }
+/* Dissolvenza incrociata: la foto che esce resta piena sotto ("uscente") e
+   quella nuova compare piano sopra, senza vuoti in mezzo. */
+.storia { opacity: 0; }
+.storia.uscente { opacity: 1; z-index: 1; }
+.storia.attiva { opacity: 1; z-index: 2; transition: opacity 1.4s cubic-bezier(.65, 0, .35, 1); }
 .storia img { width: 100%; height: 100%; object-fit: cover; }
-.storia.attiva img { animation: avvicina 6s linear forwards; }
+/* La leggera avvicinata continua anche mentre la foto esce. */
+.storia.attiva img, .storia.uscente img { animation: avvicina 7s linear forwards; }
 @keyframes avvicina { from { transform: scale(1); } to { transform: scale(1.05); } }
 /* In basso tutto insieme: le barre di avanzamento sotto, sopra di loro le
    scritte a sinistra e le frecce a destra. */
