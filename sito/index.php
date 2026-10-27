@@ -13,7 +13,20 @@ $parti = array_map('trim', explode(',', $frase, 2));
 $righe = array_values(array_filter(array_map('trim', explode("\n", $c['manifestoTitle'] ?? ''))));
 
 // Le storie: un lavoro per volta, toccando la scheda si apre il lavoro.
-$storie = array_slice(array_values(array_filter(lavori_pubblicati(), fn($w) => copertina($w) !== '')), 0, 6);
+// Nel carosello vanno solo foto orizzontali: per ogni lavoro si prova la
+// copertina e poi le altre foto, e sito.js tiene la prima orizzontale
+// (i lavori senza foto orizzontali escono dal carosello).
+$storie = [];
+foreach (lavori_pubblicati() as $w) {
+    $foto = array_values(array_unique(array_filter(array_merge(
+        [copertina($w)],
+        array_map(fn($p) => $p['url'] ?? '', $w['photos'] ?? [])
+    ))));
+    if ($foto) {
+        $storie[] = ['lavoro' => $w, 'foto' => array_map(fn($u) => foto($u, 2000), $foto)];
+    }
+}
+$storie = array_slice($storie, 0, 6);
 
 require __DIR__ . '/inc/testa.php';
 ?>
@@ -22,10 +35,11 @@ require __DIR__ . '/inc/testa.php';
 <!-- Apertura: le storie dei lavori a tutto schermo, sotto la barra. -->
 <section class="storie" data-storie data-intervallo="5000" aria-roledescription="carosello" aria-label="I nostri lavori">
   <div class="storie-foto">
-    <?php foreach ($storie as $i => $w): ?>
+    <?php foreach ($storie as $i => ['lavoro' => $w, 'foto' => $foto]): ?>
       <figure class="storia<?= $i === 0 ? ' attiva' : '' ?>" data-titolo="<?= e($w['title'] ?? '') ?>"
-              data-meta="<?= e(unisci([$w['category'] ?? '', $w['location'] ?? ''])) ?>" data-link="<?= e(url('lavoro', $w['id'])) ?>">
-        <img <?= foto_attr(copertina($w), '100vw') ?> alt="<?= e($w['title'] ?? '') ?>" <?= $i > 0 ? 'loading="lazy"' : '' ?>>
+              data-meta="<?= e(unisci([$w['category'] ?? '', $w['location'] ?? ''])) ?>" data-link="<?= e(url('lavoro', $w['id'])) ?>"
+              data-foto="<?= e(json_encode($foto)) ?>">
+        <img src="<?= e($foto[0]) ?>" alt="<?= e($w['title'] ?? '') ?>">
       </figure>
     <?php endforeach; ?>
   </div>
@@ -33,10 +47,11 @@ require __DIR__ . '/inc/testa.php';
   <span class="storie-firma" aria-hidden="true"><span><img src="assets/img/mark.png" alt=""></span><?= e($firma) ?></span>
   <button class="storie-prec" type="button" aria-label="Lavoro precedente"></button>
   <button class="storie-succ" type="button" aria-label="Lavoro successivo"></button>
-  <a class="storie-scheda" href="<?= e(url('lavoro', $storie[0]['id'])) ?>">
+  <?php $primo = $storie[0]['lavoro']; ?>
+  <a class="storie-scheda" href="<?= e(url('lavoro', $primo['id'])) ?>">
     <span class="storie-testo">
-      <b class="storie-titolo"><?= e($storie[0]['title'] ?? '') ?></b>
-      <span class="storie-meta"><?= e(unisci([$storie[0]['category'] ?? '', $storie[0]['location'] ?? ''])) ?></span>
+      <b class="storie-titolo"><?= e($primo['title'] ?? '') ?></b>
+      <span class="storie-meta"><?= e(unisci([$primo['category'] ?? '', $primo['location'] ?? ''])) ?></span>
     </span>
     <span class="storie-guarda">Guarda</span>
   </a>

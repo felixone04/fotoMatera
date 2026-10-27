@@ -40,6 +40,7 @@
   /* ---------------------------------------------------------- barra e menu */
 
   var barra = $('#barra');
+  var storieHome = $('.pagina-home .storie');
   // La barra non ha uno sfondo suo: prende quello della sezione che le passa
   // sotto, così non si vede mai uno stacco.
   var coloreSotto = function () {
@@ -56,6 +57,10 @@
     if (!barra) return;
     coloreSotto();
     barra.classList.toggle('scorsa', window.scrollY > 10);
+    // Nella home la barra è trasparente finché sta sopra le storie; poi
+    // prende il colore del sito.
+    var suFoto = !!storieHome && window.scrollY < storieHome.offsetHeight - barra.offsetHeight;
+    barra.classList.toggle('su-foto', suFoto);
   };
   window.addEventListener('scroll', aggiornaBarra, { passive: true });
   window.addEventListener('resize', aggiornaBarra);
@@ -151,16 +156,20 @@
 
   // Un lavoro per volta, come le storie sul telefono: le barre in alto
   // avanzano da sole, un tocco a destra va avanti, a sinistra torna indietro,
-  // e la scheda in basso apre il lavoro.
+  // e la scheda in basso apre il lavoro. Solo foto orizzontali: per ogni
+  // lavoro si tiene la prima che lo è; senza nessuna il lavoro esce.
   $$('[data-storie]').forEach(function (box) {
     var intervallo = +box.getAttribute('data-intervallo') || 5000;
     var storie = $$('.storia', box);
     var barre = $('.storie-barre', box);
     var scheda = $('.storie-scheda', box);
-    var n = storie.length, i = 0, timer = null, tTesto = null;
+    var i = 0, timer = null, tTesto = null;
     barre.style.setProperty('--durata', intervallo + 'ms');
 
     function disegna() {
+      var n = storie.length;
+      box.hidden = n === 0;
+      if (!n) return;
       storie.forEach(function (s, k) {
         var era = s.classList.contains('attiva');
         s.classList.toggle('attiva', k === i);
@@ -175,6 +184,7 @@
           barre.appendChild(b);
         }
       }
+      $$('.storie-prec, .storie-succ', box).forEach(function (b) { b.hidden = n < 2; });
       var s = storie[i];
       scheda.href = s.getAttribute('data-link');
       box.classList.add('cambio');
@@ -186,19 +196,44 @@
       }, 250);
     }
     function vai(k) {
+      var n = storie.length;
+      if (!n) return;
       i = ((k % n) + n) % n;
       disegna();
       riparti();
     }
     function riparti() {
       clearTimeout(timer);
-      if (!partito || n < 2 || document.hidden) return;
+      if (!partito || storie.length < 2 || document.hidden) return;
       timer = setTimeout(function () { vai(i + 1); }, intervallo);
     }
 
+    // Controllo delle proporzioni: una foto verticale lascia il posto alla
+    // successiva dello stesso lavoro.
+    storie.slice().forEach(function (s) {
+      var img = $('img', s);
+      var foto = JSON.parse(s.getAttribute('data-foto') || '[]'), f = 0;
+      function scarta() {
+        var corrente = storie[i];
+        storie = storie.filter(function (x) { return x !== s; });
+        s.remove();
+        var k = storie.indexOf(corrente);
+        i = k >= 0 ? k : Math.min(i, Math.max(0, storie.length - 1));
+        disegna();
+        riparti();
+      }
+      function controlla() {
+        if (!img.naturalWidth) return;
+        if (img.naturalWidth > img.naturalHeight) return;
+        if (++f < foto.length) img.src = foto[f]; else scarta();
+      }
+      img.addEventListener('load', controlla);
+      img.addEventListener('error', function () { if (++f < foto.length) img.src = foto[f]; else scarta(); });
+      if (img.complete) controlla();
+    });
+
     $('.storie-prec', box).addEventListener('click', function () { vai(i - 1); });
     $('.storie-succ', box).addEventListener('click', function () { vai(i + 1); });
-    $$('.storie-prec, .storie-succ', box).forEach(function (b) { b.hidden = n < 2; });
     sfoglia(box, function (d) { vai(i + d); });
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) clearTimeout(timer); else vai(i);

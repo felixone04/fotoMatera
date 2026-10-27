@@ -9,6 +9,7 @@ $voci = [
     ['Home', 'index'],
     ['Lavori', 'lavori'],
     ['Biografia', 'biografia'],
+    ['Preventivo', 'preventivo'],
 ];
 ?><!DOCTYPE html>
 <html lang="it">
@@ -44,13 +45,14 @@ $voci = [
 
   <header class="barra" id="barra">
     <a class="barra-logo" href="<?= e(url('index')) ?>" aria-label="Home">
-      <img src="assets/img/logo.png" alt="<?= e($nome) ?>">
+      <img class="logo-scuro" src="assets/img/logo.png" alt="<?= e($nome) ?>">
+      <!-- Sopra le storie della home il logo è chiaro. -->
+      <img class="logo-chiaro" src="assets/img/logo-chiaro.png" alt="" aria-hidden="true">
     </a>
     <nav class="barra-voci" aria-label="Menu principale">
       <?php foreach ($voci as [$t, $p]): ?>
         <a class="voce<?= $pagina === $p ? ' attivo' : '' ?>" href="<?= e(url($p)) ?>"><?= e($t) ?></a>
       <?php endforeach; ?>
-      <a class="bottone piccolo<?= $pagina === 'preventivo' ? ' attivo' : '' ?>" href="<?= e(url('preventivo')) ?>">Preventivo</a>
     </nav>
     <button class="barra-menu" type="button" aria-label="Menu" aria-expanded="false" aria-controls="menu">
       <i></i>
@@ -60,12 +62,12 @@ $voci = [
   <div class="menu" id="menu" hidden>
     <div class="menu-testa">
       <a class="barra-logo" href="<?= e(url('index')) ?>" aria-label="Home">
-        <img src="assets/img/logo.png" alt="<?= e($nome) ?>">
+        <img class="logo-scuro" src="assets/img/logo.png" alt="<?= e($nome) ?>">
       </a>
       <button class="menu-chiudi" type="button" aria-label="Chiudi">&times;</button>
     </div>
     <nav class="menu-voci">
-      <?php foreach (array_merge($voci, [['Preventivo', 'preventivo']]) as $i => [$t, $p]): ?>
+      <?php foreach ($voci as $i => [$t, $p]): ?>
         <a class="<?= $pagina === $p ? 'attivo' : '' ?>" href="<?= e(url($p)) ?>">
           <small><?= due($i + 1) ?></small><?= e($t) ?>
         </a>
