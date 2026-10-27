@@ -1,0 +1,7 @@
+# Su GitHub va solo il sito: app, APK e impostazioni locali restano sul computer.
+/app/
+/apk/
+/dist/
+/.claude/
+# Pagine HTML generate dal PHP per l'anteprima
+/_site/

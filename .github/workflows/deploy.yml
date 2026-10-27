@@ -1,0 +1,44 @@
+# Pubblica l'anteprima del sito su GitHub Pages a ogni push su master: la
+# cartella sito/ trasformata da PHP in pagine HTML statiche. L'app Android non
+# fa parte del sito: la sua APK sta solo nella cartella apk/ del progetto.
+name: Pubblica sito
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Controllo della sintassi PHP
+        run: find sito -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: Pagine HTML dal PHP
+        run: bash sito/tools/esporta.sh _site
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
