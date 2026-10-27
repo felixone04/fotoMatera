@@ -222,42 +222,40 @@ main { padding-top: var(--barra); }
 .storia img { width: 100%; height: 100%; object-fit: cover; }
 .storia.attiva img { animation: avvicina 6s linear forwards; }
 @keyframes avvicina { from { transform: scale(1); } to { transform: scale(1.05); } }
-.storie-barre { position: absolute; z-index: 3; left: var(--margine); right: var(--margine); top: calc(var(--barra) + 6px); display: flex; gap: 6px; }
-.storie-barre span { position: relative; flex: 1; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, .45); overflow: hidden; }
+/* In basso tutto insieme: le barre di avanzamento sotto, sopra di loro le
+   scritte a sinistra e le frecce a destra. */
+.storie { --fondo: clamp(18px, 2.4vw, 32px); --sopra: calc(var(--fondo) + 26px); }
+.storie-barre { position: absolute; z-index: 3; left: var(--margine); right: var(--margine); bottom: var(--fondo); display: flex; gap: 5px; }
+.storie-barre span { position: relative; flex: 1; height: 3px; border-radius: 3px; background: rgba(255, 255, 255, .35); overflow: hidden; }
 .storie-barre span.fatto { background: #fff; }
 .storie-barre span.ora::after { content: ''; position: absolute; inset: 0; background: #fff; transform-origin: left; transform: scaleX(0); animation: riempi var(--durata, 5s) linear forwards; }
 .storie.ferma .storie-barre span.ora::after { animation-play-state: paused; }
 /* Velatura in basso: il testo bianco si legge anche sulle foto chiare. */
-.storie-velo { position: absolute; z-index: 2; inset: auto 0 0; height: 46%; pointer-events: none; background: linear-gradient(to top, rgba(20, 28, 44, .62), rgba(20, 28, 44, 0)); }
-.storie-prec, .storie-succ { position: absolute; z-index: 2; top: calc(var(--barra) + 40px); bottom: 45%; }
+.storie-velo { position: absolute; z-index: 2; inset: auto 0 0; height: 36%; pointer-events: none; background: linear-gradient(to top, rgba(20, 28, 44, .5), rgba(20, 28, 44, 0)); }
+.storie-prec, .storie-succ { position: absolute; z-index: 2; top: calc(var(--barra) + 20px); bottom: 32%; }
 .storie-prec { left: 0; width: 35%; }
 .storie-succ { right: 0; width: 65%; }
 .storie-prec:focus-visible, .storie-succ:focus-visible { outline-offset: -6px; border-radius: 24px; }
 /* I festeggiati, il tipo di festa e il luogo, senza riquadro. */
 .storie-scheda {
-  position: absolute; z-index: 3; left: var(--margine); bottom: var(--margine); max-width: calc(100% - 2 * var(--margine) - 130px);
-  display: flex; flex-direction: column; align-items: flex-start; gap: 16px; color: #fff;
+  position: absolute; z-index: 3; left: var(--margine); bottom: var(--sopra); max-width: calc(100% - 2 * var(--margine) - 110px);
+  display: flex; flex-direction: column; align-items: flex-start; gap: 12px; color: #fff;
 }
-.storie-testo { display: flex; flex-direction: column; gap: 6px; min-width: 0; max-width: 100%; transition: opacity .3s; }
+.storie-testo { display: flex; flex-direction: column; gap: 3px; min-width: 0; max-width: 100%; transition: opacity .3s; }
 .storie.cambio .storie-testo { opacity: 0; }
-.storie-titolo { font: 400 clamp(34px, calc(34px + 26 * (100vw - 360px) / 1240), 60px)/1.05 var(--display); text-shadow: 0 1px 12px rgba(0, 0, 0, .18); overflow-wrap: anywhere; }
-.storie-meta { font: 500 15px/1.4 var(--testo); color: rgba(255, 255, 255, .88); }
-.storie-guarda { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 999px; border: 1.5px solid rgba(255, 255, 255, .8); font: 700 15px/1 var(--testo); transition: background .2s, color .2s, border-color .2s; }
+.storie-titolo { font: 400 clamp(22px, calc(22px + 10 * (100vw - 360px) / 1240), 32px)/1.15 var(--display); color: rgba(255, 255, 255, .92); overflow-wrap: anywhere; }
+.storie-meta { font: 400 13.5px/1.4 var(--testo); color: rgba(255, 255, 255, .72); }
+.storie-guarda { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .6); font: 500 13.5px/1 var(--testo); color: rgba(255, 255, 255, .9); transition: background .2s, color .2s, border-color .2s; }
 .storie-guarda i { font-style: normal; transition: transform .25s; }
 .storie-scheda:hover .storie-guarda { background: #fff; border-color: #fff; color: var(--inchiostro); }
 .storie-scheda:hover .storie-guarda i { transform: translateX(3px); }
 /* Le frecce per passare da una foto all'altra. */
-.storie-frecce { position: absolute; z-index: 3; right: var(--margine); bottom: var(--margine); display: flex; gap: 10px; }
+.storie-frecce { position: absolute; z-index: 3; right: var(--margine); bottom: var(--sopra); display: flex; gap: 8px; }
 .storie-freccia {
-  display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, .8);
-  color: #fff; font-size: 28px; line-height: 1; padding-bottom: 3px; transition: background .2s, color .2s;
+  display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .6);
+  color: rgba(255, 255, 255, .9); font-size: 22px; line-height: 1; padding-bottom: 2px; transition: background .2s, color .2s;
 }
 .storie-freccia:hover { background: #fff; color: var(--inchiostro); }
-@media (max-width: 599px) {
-  .storie-scheda { bottom: 20px; max-width: calc(100% - 2 * var(--margine)); }
-  .storie-frecce { bottom: auto; top: calc(var(--barra) + 26px); }
-  .storie-freccia { width: 46px; height: 46px; background: rgba(20, 28, 44, .18); }
-}
 
 /* Sotto le storie: il titolo dello studio e la frase del manifesto. */
 .home-manifesto {
